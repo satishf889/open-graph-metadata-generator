@@ -13,63 +13,60 @@ var checkDynamoEntry = async (url) => {
     },
   };
 
-  documentClient
+  let response = await documentClient
     .query(params)
     .promise()
     .then((res) => {
       var response;
       console.log(res);
       if (res.Items.length > 0) {
-        reponse = {
+        response = {
           record_found: true,
           previous_record: res.Items[0],
         };
       } else {
-        rsponse = {
+        response = {
           record_found: false,
         };
       }
       return response;
     });
+  return response;
 };
 
 // let data = {
 //   Requested_URL:
 //     "http://dl.flipkart.com/dl/noise-air-buds-truly-wireless-bluetooth-headset/p/itmcae5428d2bee1?pid=ACCFWGGWEF9V66A3&cmpid=product.share.pp",
-//   Open_Graph_Reponse: JSON.stringify(
-//     {
-//       title:
-//         "Noise Air Buds Truly Wireless Bluetooth Headset Price in India - Buy Noise Air Buds Truly Wireless Bluetooth Headset Online - Noise : Flipkart.com",
-//       description:
-//         "Buy Noise Air Buds Truly Wireless Bluetooth Headset for Rs.5999 Online, Also get Noise Air Buds Truly Wireless Bluetooth Headset Specs & Features. Only Genuine Products. 30 Day Replacement Guarantee. Free Shipping. Cash On Delivery!",
-//       canonical:
-//         "https://www.flipkart.com/noise-air-buds-truly-wireless-bluetooth-headset/p/itmcae5428d2bee1",
-//       "og:url":
-//         "https://www.flipkart.com/noise-air-buds-truly-wireless-bluetooth-headset/p/itmcae5428d2bee1",
-//       "og:site_name": "Flipkart.com",
-//       "og:title":
-//         "Noise Air Buds Truly Wireless Bluetooth Headset Price in India - Buy Noise Air Buds Truly Wireless Bluetooth Headset Online - Noise : Flipkart.com",
-//       "og:description":
-//         "Buy Noise Air Buds Truly Wireless Bluetooth Headset for Rs.5999 Online, Also get Noise Air Buds Truly Wireless Bluetooth Headset Specs & Features. Only Genuine Products. 30 Day Replacement Guarantee. Free Shipping. Cash On Delivery!",
-//       "og:type": "website",
-//       "article:publisher": "",
-//       "article:section": "",
-//       "article:tag": "",
-//       "og:image": "",
-//       "og:image:secure_url": "",
-//       "og:image:width": "",
-//       "og:image:height": "",
-//       "twitter:card": "app",
-//       "twitter:image": "",
-//       "twitter:site": "@flipkart",
-//       "og:locale": "en_US",
-//       "fb:app:id": "",
-//       "og:video": "",
-//       "fb:admins": "658873552,624500995,100000233612389",
-//     },
-//     null,
-//     2
-//   ),
+//   Open_Graph_Reponse: {
+//     title:
+//       "Noise Air Buds Truly Wireless Bluetooth Headset Price in India - Buy Noise Air Buds Truly Wireless Bluetooth Headset Online - Noise : Flipkart.com",
+//     description:
+//       "Buy Noise Air Buds Truly Wireless Bluetooth Headset for Rs.5999 Online, Also get Noise Air Buds Truly Wireless Bluetooth Headset Specs & Features. Only Genuine Products. 30 Day Replacement Guarantee. Free Shipping. Cash On Delivery!",
+//     canonical:
+//       "https://www.flipkart.com/noise-air-buds-truly-wireless-bluetooth-headset/p/itmcae5428d2bee1",
+//     "og:url":
+//       "https://www.flipkart.com/noise-air-buds-truly-wireless-bluetooth-headset/p/itmcae5428d2bee1",
+//     "og:site_name": "Flipkart.com",
+//     "og:title":
+//       "Noise Air Buds Truly Wireless Bluetooth Headset Price in India - Buy Noise Air Buds Truly Wireless Bluetooth Headset Online - Noise : Flipkart.com",
+//     "og:description":
+//       "Buy Noise Air Buds Truly Wireless Bluetooth Headset for Rs.5999 Online, Also get Noise Air Buds Truly Wireless Bluetooth Headset Specs & Features. Only Genuine Products. 30 Day Replacement Guarantee. Free Shipping. Cash On Delivery!",
+//     "og:type": "website",
+//     "article:publisher": "",
+//     "article:section": "",
+//     "article:tag": "",
+//     "og:image": "",
+//     "og:image:secure_url": "",
+//     "og:image:width": "",
+//     "og:image:height": "",
+//     "twitter:card": "app",
+//     "twitter:image": "",
+//     "twitter:site": "@flipkart",
+//     "og:locale": "en_US",
+//     "fb:app:id": "",
+//     "og:video": "",
+//     "fb:admins": "658873552,624500995,100000233612389",
+//   },
 // };
 
 var createDynamoEntry = async (data) => {
@@ -89,5 +86,5 @@ var createDynamoEntry = async (data) => {
       )
     );
 };
-
+// createDynamoEntry(data);
 module.exports = { createDynamoEntry, checkDynamoEntry };
