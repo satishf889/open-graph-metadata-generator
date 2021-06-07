@@ -1,6 +1,7 @@
 const axios = require("axios");
 const url_parse = require("url-parse");
 const tag_parser = require("./tagParser");
+const { createDynamoEntry, checkDynamoEntry } = require("./dynamoHandler");
 
 //Get the URL Data for processing
 const getURLData = async (request_url) => {
@@ -45,9 +46,7 @@ const getURLData = async (request_url) => {
       web_metadata: response.data,
       status: response.status,
     };
-    console.log(
-      `Website metadata response : ${JSON.stringify(response, null, 2)}`
-    );
+    console.log(`Website metadata extracted`);
     return response;
   } catch (err) {
     // console.log(err);
@@ -64,20 +63,45 @@ const getURLData = async (request_url) => {
 
 exports.handler = async (event) => {
   let body = JSON.parse(event.body);
-  console.log(`Running crawler for ${body.url}`);
-  let page_metadata = await getURLData(body.url);
+  let URL = body.url;
+  console.log(`Running crawler for ${URL}`);
+  let initial_check = await checkDynamoEntry(URL);
+  if (initial_check.record_found) {
+    console.log(`Record previously searched`);
+    let { Open_Graph_Reponse, LastUpdate } = initial_check.previous_record;
+    Open_Graph_Reponse["LastUpdate"] = LastUpdate;
+    let response = {
+      statusCode: 200,
+      body: JSON.stringify({ Open_Graph_Reponse }, null, 2),
+    };
+    console.log(`Sending response as ${JSON.stringify(response, null, 2)} `);
+    return response;
+  }
+
+  let page_metadata = await getURLData(URL);
   const { status, web_metadata } = page_metadata;
   if (status === 400) {
-    return {
+    let response = {
       statusCode: status,
       body: JSON.stringify("The URL you provided does not exists"),
     };
+    console.log(`Sending response as ${JSON.stringify(response, null, 2)} `);
+    return response;
   } else {
     let parsedData = tag_parser(web_metadata);
+    let data_toSend = { Open_Graph_Reponse: parsedData };
     const response = {
       statusCode: 200,
-      body: JSON.stringify(parsedData),
+      body: JSON.stringify(data_toSend, null, 2),
     };
+    let data_ToStore = {
+      Requested_URL: URL,
+      Open_Graph_Reponse: parsedData,
+    };
+    console.log(`Adding entry in dynamo for future reference`);
+    await createDynamoEntry(data_ToStore);
+    console.log(`Sending response as ${JSON.stringify(response, null, 2)} `);
+
     return response;
   }
 };
