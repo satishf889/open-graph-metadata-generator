@@ -1,7 +1,4 @@
-let fs = require("fs");
-// var xml = fs.readFileSync("test.html");
-let xml = fs.readFileSync("test.html", "utf8");
-
+// let xml = fs.readFileSync("test.html", "utf8");
 var generateTags = (xml) => {
   let cheerio = require("cheerio");
   let $ = cheerio.load(xml);
@@ -124,5 +121,4 @@ var generateTags = (xml) => {
   return response;
 };
 
-// console.log(generateTags(xml));
 module.exports = generateTags;
