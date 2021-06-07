@@ -1,5 +1,6 @@
 const axios = require("axios");
 const url_parse = require("url-parse");
+const tag_parser = require("./tagParser");
 
 //Get the URL Data for processing
 const getURLData = async (request_url) => {
@@ -39,42 +40,46 @@ const getURLData = async (request_url) => {
 
     //Returning Data
     let response = await axios(config).then((res) => res);
-    console.log(response.headers);
-    return {
-      response: response.data,
+    // console.log(response.headers);
+    response = {
+      web_metadata: response.data,
       status: response.status,
     };
+    console.log(
+      `Website metadata response : ${JSON.stringify(response, null, 2)}`
+    );
+    return response;
   } catch (err) {
     // console.log(err);
-    console.log(`Aborting the process, found folowing error ${err}`);
-    return {
-      response: "Something went wrong",
-      status: err.statusCode,
+
+    let response = {
+      web_metadata: "Something went wrong",
+      status: 400,
     };
+    console.log(`Aborting the process, found folowing error ${err}`);
+    console.log(`Error : ${JSON.stringify(response, null, 2)}`);
+    return response;
   }
 };
 
 exports.handler = async (event) => {
-  console.log(`Running crawler for ${event.url}`);
-  let page_metadata = await getURLData(event.url);
-  let { status, response } = page_metadata;
-  if ((status > 400) & (status < 500)) {
+  let body = JSON.parse(event.body);
+  console.log(`Running crawler for ${body.url}`);
+  let page_metadata = await getURLData(body.url);
+  const { status, web_metadata } = page_metadata;
+  if (status === 400) {
     return {
       statusCode: status,
       body: JSON.stringify("The URL you provided does not exists"),
     };
-  } else if (status > 500) {
-    return {
-      statusCode: status,
-      body: JSON.stringify("Something went wrong, please try after sometime"),
+  } else {
+    let parsedData = tag_parser(web_metadata);
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify(parsedData),
     };
+    return response;
   }
-  // console.log(response);
-  // const response = {
-  //   statusCode: 200,
-  //   body: JSON.stringify("Hello from Lambda!"),
-  // };
-  // return response;
 };
 
 // handler("https://www.amazon.in/gp/product/B07L4JDX4F/");

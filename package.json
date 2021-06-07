@@ -18,6 +18,9 @@
   "homepage": "https://github.com/satishf889/open-graph-metadata-generator#readme",
   "dependencies": {
     "axios": "^0.21.1",
-    "url-parse": "^1.5.1"
-  }
+    "cheerio": "^1.0.0-rc.9",
+    "url-parse": "^1.5.1",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {}
 }
