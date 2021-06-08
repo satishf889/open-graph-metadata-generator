@@ -3,6 +3,7 @@
 
 #package files
 *.zip
+Open Graph.postman_collection.json
 
 #environment variables
 .env
