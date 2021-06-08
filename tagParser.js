@@ -1,3 +1,4 @@
+// let fs = require("fs");
 // let xml = fs.readFileSync("test.html", "utf8");
 var generateTags = (xml) => {
   let cheerio = require("cheerio");
@@ -8,7 +9,6 @@ var generateTags = (xml) => {
     $("head>link[rel=canonical]").attr("href") !== undefined
       ? $("head>link[rel=canonical]").attr("href")
       : "";
-  // let og_url = $("head>link[rel=canonical]").attr("href");
   let og_url =
     $(`head>meta[property="og:url"]`).attr("content") !== undefined
       ? $(`head>meta[property="og:url"]`).attr("content")
@@ -33,6 +33,24 @@ var generateTags = (xml) => {
     $("head>meta[name=description]").attr("content") !== undefined
       ? $("head>meta[name=description]").attr("content")
       : og_description;
+
+  //Creating image Source
+  let image_array = [];
+  $(`body`)
+    .find("*")
+    .children("img")
+    .each(function () {
+      imgsrc = $(this).attr("src");
+      if (
+        !imgsrc.includes("https") ||
+        imgsrc.includes("locale") ||
+        imgsrc.includes("pixel")
+      ) {
+        console.log(`Skipping ${imgsrc}`);
+      } else {
+        image_array.push(imgsrc);
+      }
+    });
   let og_image =
     $(`head>meta[property="og:image"]`).attr("content") !== undefined
       ? $(`head>meta[property="og:image"]`).attr("content")
@@ -97,6 +115,7 @@ var generateTags = (xml) => {
     title,
     description,
     canonical,
+    images: image_array,
     "og:url": og_url,
     "og:site_name": og_site_name,
 
