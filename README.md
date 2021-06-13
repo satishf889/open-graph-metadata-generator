@@ -18,4 +18,5 @@ Repository used to extract open graph metadata of an website using **AWS Serverl
     1. request_url
     2. refresh_existing
 
-
+# Example Request Body
+![Request Body](https://github.com/satishf889/open-graph-metadata-generator/blob/master/requestbody.jpg?raw=true)
